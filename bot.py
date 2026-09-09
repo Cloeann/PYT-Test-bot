@@ -9,7 +9,7 @@ from discord.ext import commands
 # ========================================
 
 TOKEN = os.getenv(
-    "DISCORD_TOKEN"
+    "BOT_TOKEN"
 )
 
 
