@@ -37,33 +37,6 @@ bot = commands.Bot(
 
 
 # ========================================
-# READY
-# ========================================
-
-@bot.event
-async def on_ready():
-
-    try:
-
-        synced = await bot.tree.sync()
-
-        print(
-            f"🔄 Synced {len(synced)} slash command(s)"
-        )
-
-    except Exception as error:
-
-        print(
-            f"❌ Could not sync commands: {error}"
-        )
-
-
-    print(
-        f"🤖 Logged in as {bot.user}"
-    )
-
-
-# ========================================
 # PING COMMAND
 # ========================================
 
@@ -81,6 +54,68 @@ async def ping(
 
         "🏓 Pong! The bot is alive!"
 
+    )
+
+
+# ========================================
+# EMOJI TEST COMMAND
+# ========================================
+
+@bot.tree.command(
+    name="emoji",
+    description="Start an emoji guessing game!"
+)
+async def emoji(
+
+    interaction: discord.Interaction
+
+):
+
+    await interaction.response.send_message(
+
+        "🎮 Emoji game test! It works! 🎉"
+
+    )
+
+
+# ========================================
+# READY
+# ========================================
+
+@bot.event
+async def on_ready():
+
+    try:
+
+        guild = discord.Object(
+            id=GUILD_ID
+        )
+
+
+        bot.tree.copy_global_to(
+            guild=guild
+        )
+
+
+        synced = await bot.tree.sync(
+            guild=guild
+        )
+
+
+        print(
+            f"🔄 Synced {len(synced)} slash command(s)"
+        )
+
+
+    except Exception as error:
+
+        print(
+            f"❌ Could not sync commands: {error}"
+        )
+
+
+    print(
+        f"🤖 Logged in as {bot.user}"
     )
 
 
