@@ -36,17 +36,20 @@ GAME_TIME = 60
 # EMBED COLORS
 # ========================================
 
-CATEGORY_COLORS = {
+# 🩵 Start / category selection
+START_COLOR = 0x1AC1DD
 
-    "movies": 0xE74C3C,
+# 🟠 Game currently running
+GAME_COLOR = 0xFF6E00
 
-    "anime": 0x9B59B6,
+# 🟢 Someone won
+WIN_COLOR = 0x00FF7F
 
-    "countries": 0x2ECC71,
+# 🔴 Nobody got it
+TIMEOUT_COLOR = 0xE74C3C
 
-    "words": 0xF39C12
-
-}
+# 🏆 Leaderboard
+LEADERBOARD_COLOR = 0xF1C40F
 
 
 # ========================================
@@ -92,9 +95,13 @@ def create_timer_bar(remaining):
     )
 
     return (
+
         "🟩" * filled_blocks
+
         +
+
         "⬜" * empty_blocks
+
     )
 
 
@@ -112,9 +119,13 @@ def load_json(path, default):
 
 
         with open(
+
             path,
+
             "r",
+
             encoding="utf-8"
+
         ) as file:
 
             return json.load(file)
@@ -123,7 +134,9 @@ def load_json(path, default):
     except Exception as error:
 
         print(
+
             f"❌ Could not load {path}: {error}"
+
         )
 
         return default
@@ -138,23 +151,34 @@ def save_json(path, data):
     try:
 
         with open(
+
             path,
+
             "w",
+
             encoding="utf-8"
+
         ) as file:
 
             json.dump(
+
                 data,
+
                 file,
+
                 indent=4,
+
                 ensure_ascii=False
+
             )
 
 
     except Exception as error:
 
         print(
+
             f"❌ Could not save {path}: {error}"
+
         )
 
 
@@ -167,15 +191,23 @@ def normalize_answer(text):
     text = text.lower()
 
     text = re.sub(
+
         r"[^a-z0-9\s]",
+
         "",
+
         text
+
     )
 
     text = re.sub(
+
         r"\s+",
+
         " ",
+
         text
+
     )
 
     return text.strip()
@@ -217,8 +249,11 @@ def check_answer(
 def load_scores():
 
     return load_json(
+
         SCORES_PATH,
+
         {}
+
     )
 
 
@@ -229,8 +264,11 @@ def load_scores():
 def save_scores(scores):
 
     save_json(
+
         SCORES_PATH,
+
         scores
+
     )
 
 
@@ -307,20 +345,28 @@ def generate_hint(answer):
 
         for index, character in enumerate(word):
 
+            # Show first letter
+
             if index == 0 and character.isalpha():
 
                 hint_word += character
 
+
+            # Keep hyphens visible
 
             elif character == "-":
 
                 hint_word += "-"
 
 
+            # Hide letters
+
             elif character.isalpha():
 
                 hint_word += "_"
 
+
+            # Keep punctuation visible
 
             else:
 
@@ -350,14 +396,11 @@ def create_game_embed(
 ):
 
     category_emoji = CATEGORY_EMOJIS.get(
+
         category,
+
         "🎮"
-    )
 
-
-    category_color = CATEGORY_COLORS.get(
-        category,
-        0x5865F2
     )
 
 
@@ -377,13 +420,13 @@ def create_game_embed(
 
             f"{create_timer_bar(remaining)}\n\n"
 
-            "💬 **Type your guess in chat!**\n"
+            "💬 **Type your guess in chat!**\n\n"
 
             "🏆 First correct answer wins!"
 
         ),
 
-        color=category_color
+        color=GAME_COLOR
 
     )
 
@@ -412,6 +455,10 @@ def create_game_embed(
 
         )
 
+
+    # ====================================
+    # FOOTER
+    # ====================================
 
     embed.set_footer(
 
@@ -444,14 +491,23 @@ class CategoryView(
         self.author = author
 
 
+    # ====================================
+    # INTERACTION CHECK
+    # ====================================
+
     async def interaction_check(
         self,
         interaction
     ):
 
         if (
+
             interaction.user.id
-            != self.author.id
+
+            !=
+
+            self.author.id
+
         ):
 
             await interaction.response.send_message(
@@ -469,7 +525,7 @@ class CategoryView(
 
 
     # ====================================
-    # MOVIES
+    # MOVIES BUTTON
     # ====================================
 
     @discord.ui.button(
@@ -482,19 +538,26 @@ class CategoryView(
 
     )
     async def movies(
+
         self,
+
         interaction,
+
         button
+
     ):
 
         await start_game(
+
             interaction,
+
             "movies"
+
         )
 
 
     # ====================================
-    # ANIME
+    # ANIME BUTTON
     # ====================================
 
     @discord.ui.button(
@@ -507,19 +570,26 @@ class CategoryView(
 
     )
     async def anime(
+
         self,
+
         interaction,
+
         button
+
     ):
 
         await start_game(
+
             interaction,
+
             "anime"
+
         )
 
 
     # ====================================
-    # COUNTRIES
+    # COUNTRIES BUTTON
     # ====================================
 
     @discord.ui.button(
@@ -532,19 +602,26 @@ class CategoryView(
 
     )
     async def countries(
+
         self,
+
         interaction,
+
         button
+
     ):
 
         await start_game(
+
             interaction,
+
             "countries"
+
         )
 
 
     # ====================================
-    # WORDS
+    # WORDS BUTTON
     # ====================================
 
     @discord.ui.button(
@@ -557,14 +634,21 @@ class CategoryView(
 
     )
     async def words(
+
         self,
+
         interaction,
+
         button
+
     ):
 
         await start_game(
+
             interaction,
+
             "words"
+
         )
 
 
@@ -602,8 +686,11 @@ async def start_game(
     # ====================================
 
     puzzles = load_json(
+
         PUZZLES_PATH,
+
         {}
+
     )
 
 
@@ -638,7 +725,7 @@ async def start_game(
 
 
     # ====================================
-    # PICK PUZZLE
+    # PICK RANDOM PUZZLE
     # ====================================
 
     puzzle = random.choice(
@@ -723,7 +810,10 @@ async def start_game(
         return (
 
             message.channel.id
-            == channel_id
+
+            ==
+
+            channel_id
 
             and
 
@@ -761,18 +851,30 @@ async def start_game(
 
 
             # ================================
-            # 30 SECOND HINT
+            # UNLOCK HINT
             # ================================
 
             if (
+
                 remaining <= 30
+
                 and
+
                 not hint_shown
+
             ):
 
                 hint_shown = True
 
+
+            # ================================
+            # SHOW HINT
+            # ================================
+
+            if hint_shown:
+
                 answer = answers[0]
+
 
                 hint = generate_hint(
                     answer
@@ -798,30 +900,6 @@ async def start_game(
             # CREATE UPDATED EMBED
             # ================================
 
-            if hint_shown and hint is None:
-
-                answer = answers[0]
-
-                hint = generate_hint(
-                    answer
-                )
-
-
-                letter_count = len(
-
-                    [
-
-                        character
-
-                        for character in answer
-
-                        if character.isalpha()
-
-                    ]
-
-                )
-
-
             updated_embed = create_game_embed(
 
                 category,
@@ -838,7 +916,7 @@ async def start_game(
 
 
             # ================================
-            # EDIT EMBED
+            # EDIT GAME EMBED
             # ================================
 
             try:
@@ -867,7 +945,7 @@ async def start_game(
 
 
     # ====================================
-    # GAME TIMER
+    # START TIMER
     # ====================================
 
     start_time = (
@@ -879,11 +957,18 @@ async def start_game(
 
         while True:
 
+
+            # ================================
+            # CALCULATE TIME
+            # ================================
+
             elapsed = (
 
                 asyncio.get_event_loop().time()
 
-                - start_time
+                -
+
+                start_time
 
             )
 
@@ -892,15 +977,25 @@ async def start_game(
 
                 GAME_TIME
 
-                - elapsed
+                -
+
+                elapsed
 
             )
 
+
+            # ================================
+            # TIME'S UP
+            # ================================
 
             if remaining_time <= 0:
 
                 raise asyncio.TimeoutError
 
+
+            # ================================
+            # WAIT FOR MESSAGE
+            # ================================
 
             message = await interaction.client.wait_for(
 
@@ -926,8 +1021,12 @@ async def start_game(
             ):
 
 
+                # Cancel countdown
+
                 countdown_task.cancel()
 
+
+                # Add score
 
                 score = add_score(
 
@@ -935,6 +1034,10 @@ async def start_game(
 
                 )
 
+
+                # ================================
+                # WINNER EMBED
+                # ================================
 
                 winner_embed = discord.Embed(
 
@@ -946,7 +1049,7 @@ async def start_game(
 
                         "━━━━━━━━━━━━━━━━━━\n\n"
 
-                        "🎯 **Correct Answer**\n"
+                        "🎯 **Correct Answer**\n\n"
 
                         f"## {answers[0]}\n\n"
 
@@ -956,7 +1059,7 @@ async def start_game(
 
                     ),
 
-                    color=0xF1C40F
+                    color=WIN_COLOR
 
                 )
 
@@ -1006,7 +1109,7 @@ async def start_game(
 
             ),
 
-            color=0xE74C3C
+            color=TIMEOUT_COLOR
 
         )
 
@@ -1106,17 +1209,17 @@ def setup_emoji_game(bot):
 
                 "━━━━━━━━━━━━━━━━━━\n\n"
 
-                "🎬 **Movies**\n"
+                "🎬 **Movies**\n\n"
 
-                "🍥 **Anime**\n"
+                "🍥 **Anime**\n\n"
 
-                "🌍 **Countries**\n"
+                "🌍 **Countries**\n\n"
 
                 "💬 **Words & Phrases**"
 
             ),
 
-            color=0x5865F2
+            color=START_COLOR
 
         )
 
@@ -1128,12 +1231,20 @@ def setup_emoji_game(bot):
         )
 
 
+        # ====================================
+        # CATEGORY BUTTONS
+        # ====================================
+
         view = CategoryView(
 
             interaction.user
 
         )
 
+
+        # ====================================
+        # SEND
+        # ====================================
 
         await interaction.response.send_message(
 
@@ -1211,6 +1322,10 @@ def setup_emoji_game(bot):
         ):
 
 
+            # ================================
+            # MEDALS
+            # ================================
+
             if index == 1:
 
                 medal = "🥇"
@@ -1230,6 +1345,10 @@ def setup_emoji_game(bot):
 
                 medal = f"`#{index}`"
 
+
+            # ================================
+            # ADD PLAYER
+            # ================================
 
             leaderboard.append(
 
@@ -1252,13 +1371,15 @@ def setup_emoji_game(bot):
 
                 "🔥 **Who is the Emoji Master?** 🔥\n\n"
 
-                + "\n\n".join(
+                +
+
+                "\n\n".join(
                     leaderboard
                 )
 
             ),
 
-            color=discord.Color.gold()
+            color=LEADERBOARD_COLOR
 
         )
 
