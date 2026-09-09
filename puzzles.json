@@ -1,0 +1,163 @@
+{
+    "movies": [
+        {
+            "emoji": "🦁👑",
+            "answer": "The Lion King",
+            "aliases": [
+                "lion king"
+            ]
+        },
+        {
+            "emoji": "🕷️👨",
+            "answer": "Spider-Man",
+            "aliases": [
+                "spiderman",
+                "spider man"
+            ]
+        },
+        {
+            "emoji": "🧙‍♂️⚡",
+            "answer": "Harry Potter",
+            "aliases": [
+                "harry potter"
+            ]
+        },
+        {
+            "emoji": "🚢❄️💔",
+            "answer": "Titanic",
+            "aliases": [
+                "titanic"
+            ]
+        },
+        {
+            "emoji": "👻🚫",
+            "answer": "Ghostbusters",
+            "aliases": [
+                "ghost busters",
+                "ghostbusters"
+            ]
+        }
+    ],
+
+    "anime": [
+        {
+            "emoji": "🍥🦊👦",
+            "answer": "Naruto",
+            "aliases": [
+                "naruto"
+            ]
+        },
+        {
+            "emoji": "🏴‍☠️👒",
+            "answer": "One Piece",
+            "aliases": [
+                "onepiece",
+                "one piece"
+            ]
+        },
+        {
+            "emoji": "🐉⚡👦",
+            "answer": "Dragon Ball",
+            "aliases": [
+                "dragonball",
+                "dragon ball"
+            ]
+        },
+        {
+            "emoji": "👹⚔️",
+            "answer": "Demon Slayer",
+            "aliases": [
+                "demonslayer",
+                "demon slayer"
+            ]
+        },
+        {
+            "emoji": "👊💥",
+            "answer": "One Punch Man",
+            "aliases": [
+                "onepunchman",
+                "one punch man"
+            ]
+        }
+    ],
+
+    "countries": [
+        {
+            "emoji": "🍁",
+            "answer": "Canada",
+            "aliases": [
+                "canada"
+            ]
+        },
+        {
+            "emoji": "🍕🇮🇹",
+            "answer": "Italy",
+            "aliases": [
+                "italy",
+                "italia"
+            ]
+        },
+        {
+            "emoji": "🗼🥖",
+            "answer": "France",
+            "aliases": [
+                "france"
+            ]
+        },
+        {
+            "emoji": "🦘",
+            "answer": "Australia",
+            "aliases": [
+                "australia"
+            ]
+        },
+        {
+            "emoji": "🌷🚲",
+            "answer": "Netherlands",
+            "aliases": [
+                "the netherlands",
+                "holland",
+                "netherlands"
+            ]
+        }
+    ],
+
+    "words": [
+        {
+            "emoji": "🌧️🐱🐶",
+            "answer": "Raining Cats and Dogs",
+            "aliases": [
+                "raining cats and dogs"
+            ]
+        },
+        {
+            "emoji": "🧊💔",
+            "answer": "Cold Hearted",
+            "aliases": [
+                "cold hearted",
+                "coldhearted"
+            ]
+        },
+        {
+            "emoji": "🔥👀",
+            "answer": "Hot Eyes",
+            "aliases": [
+                "hot eyes"
+            ]
+        },
+        {
+            "emoji": "🧠💨",
+            "answer": "Mind Blown",
+            "aliases": [
+                "mind blown"
+            ]
+        },
+        {
+            "emoji": "👀❤️",
+            "answer": "Love at First Sight",
+            "aliases": [
+                "love at first sight"
+            ]
+        }
+    ]
+}
