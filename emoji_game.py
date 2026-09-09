@@ -31,6 +31,69 @@ SCORES_PATH = os.path.join(
 
 GAME_TIME = 60
 
+# ========================================
+# EMBED COLORS
+# ========================================
+
+CATEGORY_COLORS = {
+
+    "movies": 0xE74C3C,
+
+    "anime": 0x9B59B6,
+
+    "countries": 0x2ECC71,
+
+    "words": 0xF39C12
+
+}
+
+
+# ========================================
+# CATEGORY EMOJIS
+# ========================================
+
+CATEGORY_EMOJIS = {
+
+    "movies": "🎬",
+
+    "anime": "🍥",
+
+    "countries": "🌍",
+
+    "words": "💬"
+
+}
+
+
+# ========================================
+# TIMER BAR
+# ========================================
+
+def create_timer_bar(remaining):
+
+    total_blocks = 10
+
+    filled_blocks = int(
+        (remaining / GAME_TIME)
+        * total_blocks
+    )
+
+
+    empty_blocks = (
+        total_blocks
+        - filled_blocks
+    )
+
+
+    return (
+
+        "🟩" * filled_blocks
+
+        +
+
+        "⬜" * empty_blocks
+
+    )
 
 # ========================================
 # ACTIVE GAMES
@@ -268,25 +331,36 @@ def create_game_embed(
     letter_count=None
 ):
 
-    embed = discord.Embed(
+   embed = discord.Embed(
 
-        title="🎮 Emoji Guessing Game",
+    title="🎮 Emoji Guessing Game",
 
-        description=(
+    description=(
 
-            f"Category: **{category.title()}**\n\n"
+        "## Ready to test your brain? 🧠⚡\n\n"
 
-            f"# {emojis}\n\n"
+        "Pick a category below and guess "
+        "the answer before time runs out!\n\n"
 
-            f"⏱️ **Time remaining: {remaining} seconds**\n\n"
+        "━━━━━━━━━━━━━━━━━━\n\n"
 
-            f"💬 Everyone can guess in chat!"
+        "🎬 **Movies**\n"
+        "🍥 **Anime**\n"
+        "🌍 **Countries**\n"
+        "💬 **Words & Phrases**"
 
-        )
+    ),
 
-    )
+    color=0x5865F2
+
+)
 
 
+embed.set_footer(
+
+    text="🏆 Get answers right to climb the leaderboard!"
+
+)
     # ====================================
     # HINT FIELD
     # ====================================
@@ -590,30 +664,56 @@ async def start_game(
     # CREATE GAME EMBED
     # ====================================
 
-    embed = discord.Embed(
+    ecategory_emoji = CATEGORY_EMOJIS.get(
 
-        title="🎮 Emoji Guessing Game",
+    category,
 
-        description=(
+    "🎮"
 
-            f"Category: **{category.title()}**\n\n"
-
-            f"# {emojis}\n\n"
-
-            f"⏳ **Time Remaining: {GAME_TIME} seconds**\n\n"
-
-            f"💬 Everyone can guess in chat!"
-
-        )
-
-    )
+)
 
 
-    game_message = await interaction.channel.send(
+category_color = CATEGORY_COLORS.get(
 
-        embed=embed
+    category,
 
-    )
+    0x5865F2
+
+)
+
+
+embed = discord.Embed(
+
+    title=f"{category_emoji} EMOJI CHALLENGE!",
+
+    description=(
+
+        f"### {category.title()}\n\n"
+
+        f"# {emojis}\n\n"
+
+        "━━━━━━━━━━━━━━━━━━\n\n"
+
+        f"⏳ **Time Remaining: {GAME_TIME}s**\n"
+
+        f"{create_timer_bar(GAME_TIME)}\n\n"
+
+        "💬 **Type your guess in chat!**\n"
+
+        "🏆 First correct answer wins!"
+
+    ),
+
+    color=category_color
+
+)
+
+
+embed.set_footer(
+
+    text="🔥 Think fast • Guess faster"
+
+)
 
 
     # ====================================
@@ -655,24 +755,38 @@ async def start_game(
             # CREATE UPDATED EMBED
             # ================================
 
-            updated_embed = discord.Embed(
+           updated_embed = discord.Embed(
 
-                title="🎮 Emoji Guessing Game",
+    title=f"{category_emoji} EMOJI CHALLENGE!",
 
-                description=(
+    description=(
 
-                    f"Category: **{category.title()}**\n\n"
+        f"### {category.title()}\n\n"
 
-                    f"# {emojis}\n\n"
+        f"# {emojis}\n\n"
 
-                    f"⏳ **Time Remaining: {remaining} seconds**\n\n"
+        "━━━━━━━━━━━━━━━━━━\n\n"
 
-                    f"💬 Everyone can guess in chat!"
+        f"⏳ **Time Remaining: {remaining}s**\n"
 
-                )
+        f"{create_timer_bar(remaining)}\n\n"
 
-            )
+        "💬 **Type your guess in chat!**\n"
 
+        "🏆 First correct answer wins!"
+
+    ),
+
+    color=category_color
+
+)
+
+
+updated_embed.set_footer(
+
+    text="🔥 Think fast • Guess faster"
+
+)
 
             # ================================
             # 30 SECOND HINT
@@ -704,21 +818,23 @@ async def start_game(
                 )
 
 
-                updated_embed.add_field(
+               updated_embed.add_field(
 
-                    name="💡 HINT! 👀",
+    name="💡 HINT UNLOCKED! 👀",
 
-                    value=(
+    value=(
 
-                        f"`{hint}`\n\n"
+        f"## `{hint}`\n\n"
 
-                        f"📝 Total letters: **{letter_count}**"
+        f"🔤 **Letters:** {letter_count}\n"
 
-                    ),
+        "💭 *Use your brain... or your friends!*"
 
-                    inline=False
+    ),
 
-                )
+    inline=False
+
+)
 
 
             # ================================
@@ -819,24 +935,35 @@ async def start_game(
 
                 # Correct answer embed
 
-                winner_embed = discord.Embed(
+              winner_embed = discord.Embed(
 
-                    title="🎉 Correct!",
+    title="🎉 WE HAVE A WINNER! 🎉",
 
-                    description=(
+    description=(
 
-                        f"🏆 {message.author.mention} "
+        f"## 🏆 {message.author.mention}\n\n"
 
-                        f"got it!\n\n"
+        "━━━━━━━━━━━━━━━━━━\n\n"
 
-                        f"✅ Answer: **{answers[0]}**\n\n"
+        f"🎯 **Correct Answer**\n"
+        f"## {answers[0]}\n\n"
 
-                        f"⭐ Total Score: **{score}**"
+        f"⭐ **Total Score:** {score}\n\n"
 
-                    )
+        "🔥 *Can anyone stop them?*"
 
-                )
+    ),
 
+    color=0xF1C40F
+
+)
+
+
+winner_embed.set_footer(
+
+    text="🏆 Check /emoji_highscore to see the rankings!"
+
+)
 
                 await interaction.channel.send(
 
@@ -858,19 +985,34 @@ async def start_game(
         countdown_task.cancel()
 
 
-        timeout_embed = discord.Embed(
+      timeout_embed = discord.Embed(
 
-            title="⏰ Time's Up!",
+    title="⏰ TIME'S UP!",
 
-            description=(
+    description=(
 
-                f"The answer was:\n\n"
+        "Nobody got it this time... 😭\n\n"
 
-                f"**{answers[0]}**"
+        "━━━━━━━━━━━━━━━━━━\n\n"
 
-            )
+        "🎯 **The answer was:**\n"
 
-        )
+        f"## {answers[0]}\n\n"
+
+        "💀 Better luck next round!"
+
+    ),
+
+    color=0xE74C3C
+
+)
+
+
+timeout_embed.set_footer(
+
+    text="🎮 Start another game with /emoji"
+
+)
 
 
         await interaction.channel.send(
@@ -1028,7 +1170,7 @@ def setup_emoji_game(bot):
         )
 
 
-        # ====================================
+              # ====================================
         # CREATE LEADERBOARD
         # ====================================
 
@@ -1044,29 +1186,70 @@ def setup_emoji_game(bot):
         ):
 
 
+            # Medal emojis for top 3
+
+            if index == 1:
+
+                medal = "🥇"
+
+
+            elif index == 2:
+
+                medal = "🥈"
+
+
+            elif index == 3:
+
+                medal = "🥉"
+
+
+            else:
+
+                medal = f"`#{index}`"
+
+
             leaderboard.append(
 
-                f"**{index}.** "
+                f"{medal} **{player['name']}**\n"
 
-                f"{player['name']} — "
-
-                f"🏆 {player['score']}"
+                f"　🏆 **{player['score']} points**"
 
             )
 
+
+        # ====================================
+        # CREATE COLORFUL EMBED
+        # ====================================
 
         embed = discord.Embed(
 
-            title="🏆 Emoji Game Highscores",
+            title="🏆 EMOJI GAME LEADERBOARD 🏆",
 
-            description="\n".join(
+            description=(
 
-                leaderboard
+                "🔥 **Who is the Emoji Master?** 🔥\n\n"
 
-            )
+                + "\n\n".join(leaderboard)
+
+            ),
+
+            color=discord.Color.gold()
 
         )
 
+
+        # Footer
+
+        embed.set_footer(
+
+            text="🎮 Keep playing to climb the leaderboard!"
+
+        )
+
+
+        # ====================================
+        # SEND LEADERBOARD
+        # ====================================
 
         await interaction.response.send_message(
 
