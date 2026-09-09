@@ -722,15 +722,106 @@ async def start_game(
                 )
 
 
-    # ========================================
+      # ========================================
     # START COUNTDOWN
     # ========================================
 
     countdown_task = asyncio.create_task(
-
         countdown()
-
     )
+
+
+    # ========================================
+    # GAME TIMER
+    # ========================================
+
+    start_time = asyncio.get_event_loop().time()
+
+
+    try:
+
+        while True:
+
+            elapsed = (
+                asyncio.get_event_loop().time()
+                - start_time
+            )
+
+
+            remaining_time = (
+                GAME_TIME
+                - elapsed
+            )
+
+
+            if remaining_time <= 0:
+
+                raise asyncio.TimeoutError
+
+
+            message = await interaction.client.wait_for(
+
+                "message",
+
+                timeout=remaining_time,
+
+                check=check
+
+            )
+
+
+            # ====================================
+            # CORRECT ANSWER
+            # ====================================
+
+            if check_answer(
+
+                message.content,
+
+                answers
+
+            ):
+
+
+                # Stop countdown
+
+                countdown_task.cancel()
+
+
+                score = add_score(
+
+                    message.author
+
+                )
+
+
+                winner_embed = discord.Embed(
+
+                    title="🎉 Correct!",
+
+                    description=(
+
+                        f"🏆 {message.author.mention} "
+                        f"got it!\n\n"
+
+                        f"✅ Answer: **{answers[0]}**\n\n"
+
+                        f"⭐ Total Score: **{score}**"
+
+                    )
+
+                )
+
+
+                await interaction.channel.send(
+
+                    embed=winner_embed
+
+                )
+
+
+                break
+
 
     # ========================================
     # TIME'S UP
@@ -746,11 +837,13 @@ async def start_game(
 
             title="⏰ Time's Up!",
 
-            description=
+            description=(
 
                 f"The answer was:\n\n"
 
                 f"**{answers[0]}**"
+
+            )
 
         )
 
@@ -761,6 +854,24 @@ async def start_game(
 
         )
 
+
+    # ========================================
+    # CLEANUP
+    # ========================================
+
+    finally:
+
+
+        countdown_task.cancel()
+
+
+        active_games.pop(
+
+            channel_id,
+
+            None
+
+        )
 
     # ========================================
     # CLEANUP
