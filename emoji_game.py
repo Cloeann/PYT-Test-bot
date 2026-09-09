@@ -557,7 +557,9 @@ async def start_game(
     )
 
 
-    # Wait for answer
+        # ========================================
+    # WAIT FOR ANSWER
+    # ========================================
 
     def check(message):
 
@@ -572,7 +574,46 @@ async def start_game(
         )
 
 
-    # Save when the game started
+    # ========================================
+    # COUNTDOWN
+    # ========================================
+
+    async def countdown():
+
+        remaining = GAME_TIME
+
+
+        while remaining > 0:
+
+
+            await asyncio.sleep(10)
+
+
+            remaining -= 10
+
+
+            if remaining > 0:
+
+
+                await interaction.channel.send(
+
+                    f"⏱️ **{remaining} seconds remaining!**"
+
+                )
+
+
+    # Start countdown in background
+
+    countdown_task = asyncio.create_task(
+
+        countdown()
+
+    )
+
+
+    # ========================================
+    # GAME TIMER
+    # ========================================
 
     start_time = asyncio.get_event_loop().time()
 
@@ -581,8 +622,6 @@ async def start_game(
 
         while True:
 
-
-            # Calculate remaining time
 
             elapsed = (
 
@@ -602,14 +641,10 @@ async def start_game(
             )
 
 
-            # Stop if time is up
-
             if remaining_time <= 0:
 
                 raise asyncio.TimeoutError
 
-
-            # Wait only for the remaining time
 
             message = await interaction.client.wait_for(
 
@@ -622,7 +657,9 @@ async def start_game(
             )
 
 
-            # Check answer
+            # ====================================
+            # CORRECT ANSWER
+            # ====================================
 
             if check_answer(
 
@@ -631,6 +668,11 @@ async def start_game(
                 answers
 
             ):
+
+
+                # Stop countdown
+
+                countdown_task.cancel()
 
 
                 score = add_score(
@@ -666,7 +708,14 @@ async def start_game(
                 break
 
 
+    # ========================================
+    # TIME'S UP
+    # ========================================
+
     except asyncio.TimeoutError:
+
+
+        countdown_task.cancel()
 
 
         timeout_embed = discord.Embed(
@@ -689,7 +738,14 @@ async def start_game(
         )
 
 
+    # ========================================
+    # CLEANUP
+    # ========================================
+
     finally:
+
+
+        countdown_task.cancel()
 
 
         active_games.pop(
@@ -699,7 +755,6 @@ async def start_game(
             None
 
         )
-
 
 # ========================================
 # SETUP COMMANDS
