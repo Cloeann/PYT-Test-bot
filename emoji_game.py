@@ -530,32 +530,25 @@ async def start_game(
 
 
     # ====================================
-# PICK PUZZLE
-# ====================================
+    # PICK PUZZLE
+    # ====================================
 
-puzzle = random.choice(
-
-    puzzles[category]
-
-)
+    puzzle = random.choice(
+        puzzles[category]
+    )
 
 
-# Get emojis
+    # Get emojis and answers from puzzles.json
 
-emojis = puzzle[
-
-    "emojis"
-
-]
+    emojis = puzzle[
+        "emojis"
+    ]
 
 
-# Get all accepted answers
+    answers = puzzle[
+        "answers"
+    ]
 
-answers = puzzle[
-
-    "answers"
-
-]
 
     # ====================================
     # REGISTER GAME
@@ -563,11 +556,9 @@ answers = puzzle[
 
     active_games[channel_id] = {
 
-        "answers":
-            answers,
+        "answers": answers,
 
-        "category":
-            category
+        "category": category
 
     }
 
@@ -588,7 +579,7 @@ answers = puzzle[
 
     await interaction.response.edit_message(
 
-        content="🎮 Game started!",
+        content="🎮 Starting game...",
 
         view=view
 
@@ -599,13 +590,21 @@ answers = puzzle[
     # CREATE GAME EMBED
     # ====================================
 
-    embed = create_game_embed(
+    embed = discord.Embed(
 
-        category,
+        title="🎮 Emoji Guessing Game",
 
-        emojis,
+        description=(
 
-        GAME_TIME
+            f"Category: **{category.title()}**\n\n"
+
+            f"# {emojis}\n\n"
+
+            f"⏳ **Time Remaining: {GAME_TIME} seconds**\n\n"
+
+            f"💬 Everyone can guess in chat!"
+
+        )
 
     )
 
@@ -617,9 +616,9 @@ answers = puzzle[
     )
 
 
-    # ========================================
-    # WAIT FOR ANSWER CHECK
-    # ========================================
+    # ====================================
+    # MESSAGE CHECK
+    # ====================================
 
     def check(message):
 
@@ -634,55 +633,60 @@ answers = puzzle[
         )
 
 
-    # ========================================
-    # GAME STATE
-    # ========================================
-
-    game_finished = False
-
-    hint_shown = False
-
-
-    # ========================================
-    # COUNTDOWN
-    # ========================================
+    # ====================================
+    # UPDATE TIMER EMBED
+    # ====================================
 
     async def countdown():
 
-        nonlocal hint_shown
-
         remaining = GAME_TIME
 
-
-        while remaining > 0 and not game_finished:
-
-            await asyncio.sleep(10)
+        hint_shown = False
 
 
-            if game_finished:
+        while remaining > 0:
 
-                return
+            await asyncio.sleep(5)
 
-
-            remaining -= 10
-
-
-            hint = None
-
-            letter_count = None
+            remaining -= 5
 
 
             # ================================
-            # SHOW HINT AT 30 SECONDS
+            # CREATE UPDATED EMBED
             # ================================
 
-            if remaining == 30:
+            updated_embed = discord.Embed(
+
+                title="🎮 Emoji Guessing Game",
+
+                description=(
+
+                    f"Category: **{category.title()}**\n\n"
+
+                    f"# {emojis}\n\n"
+
+                    f"⏳ **Time Remaining: {remaining} seconds**\n\n"
+
+                    f"💬 Everyone can guess in chat!"
+
+                )
+
+            )
+
+
+            # ================================
+            # 30 SECOND HINT
+            # ================================
+
+            if remaining <= 30 and not hint_shown:
 
                 hint_shown = True
 
 
+                answer = answers[0]
+
                 hint = generate_hint(
-                    correct_answer
+                    answer
                 )
 
 
@@ -691,8 +695,7 @@ answers = puzzle[
                     [
                         character
 
-                        for character
-                        in correct_answer
+                        for character in answer
 
                         if character.isalpha()
 
@@ -701,73 +704,39 @@ answers = puzzle[
                 )
 
 
-            # ================================
-            # KEEP HINT AFTER 30 SECONDS
-            # ================================
+                updated_embed.add_field(
 
-            elif hint_shown:
+                    name="💡 HINT! 👀",
 
-                hint = generate_hint(
-                    correct_answer
-                )
+                    value=(
 
+                        f"`{hint}`\n\n"
 
-                letter_count = len(
+                        f"📝 Total letters: **{letter_count}**"
 
-                    [
-                        character
+                    ),
 
-                        for character
-                        in correct_answer
-
-                        if character.isalpha()
-
-                    ]
+                    inline=False
 
                 )
 
 
             # ================================
-            # UPDATE EMBED
+            # EDIT GAME EMBED
             # ================================
 
             if remaining > 0:
 
-                new_embed = create_game_embed(
+                await game_message.edit(
 
-                    category,
-
-                    emojis,
-
-                    remaining,
-
-                    hint,
-
-                    letter_count
+                    embed=updated_embed
 
                 )
 
 
-                try:
-
-                    await game_message.edit(
-
-                        embed=new_embed
-
-                    )
-
-                except Exception as error:
-
-                    print(
-
-                        f"❌ Could not update timer: {error}"
-
-                    )
-
-
-    # ========================================
+    # ====================================
     # START COUNTDOWN
-    # ========================================
+    # ====================================
 
     countdown_task = asyncio.create_task(
 
@@ -776,9 +745,9 @@ answers = puzzle[
     )
 
 
-    # ========================================
+    # ====================================
     # GAME TIMER
-    # ========================================
+    # ====================================
 
     start_time = asyncio.get_event_loop().time()
 
@@ -786,7 +755,6 @@ answers = puzzle[
     try:
 
         while True:
-
 
             elapsed = (
 
@@ -822,9 +790,9 @@ answers = puzzle[
             )
 
 
-            # ====================================
+            # ================================
             # CORRECT ANSWER
-            # ====================================
+            # ================================
 
             if check_answer(
 
@@ -835,11 +803,12 @@ answers = puzzle[
             ):
 
 
-                game_finished = True
-
+                # Cancel countdown
 
                 countdown_task.cancel()
 
+
+                # Add score
 
                 score = add_score(
 
@@ -848,6 +817,8 @@ answers = puzzle[
                 )
 
 
+                # Correct answer embed
+
                 winner_embed = discord.Embed(
 
                     title="🎉 Correct!",
@@ -855,9 +826,10 @@ answers = puzzle[
                     description=(
 
                         f"🏆 {message.author.mention} "
+
                         f"got it!\n\n"
 
-                        f"✅ Answer: **{correct_answer}**\n\n"
+                        f"✅ Answer: **{answers[0]}**\n\n"
 
                         f"⭐ Total Score: **{score}**"
 
@@ -876,14 +848,11 @@ answers = puzzle[
                 break
 
 
-    # ========================================
+    # ====================================
     # TIME'S UP
-    # ========================================
+    # ====================================
 
     except asyncio.TimeoutError:
-
-
-        game_finished = True
 
 
         countdown_task.cancel()
@@ -897,7 +866,7 @@ answers = puzzle[
 
                 f"The answer was:\n\n"
 
-                f"**{correct_answer}**"
+                f"**{answers[0]}**"
 
             )
 
@@ -911,14 +880,11 @@ answers = puzzle[
         )
 
 
-    # ========================================
+    # ====================================
     # CLEANUP
-    # ========================================
+    # ====================================
 
     finally:
-
-
-        game_finished = True
 
 
         countdown_task.cancel()
@@ -931,7 +897,6 @@ answers = puzzle[
             None
 
         )
-
 
 # ========================================
 # SETUP COMMANDS
