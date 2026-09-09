@@ -1,163 +1,413 @@
 {
     "movies": [
-        {
-            "emoji": "🦁👑",
-            "answer": "The Lion King",
-            "aliases": [
-                "lion king"
-            ]
-        },
-        {
-            "emoji": "🕷️👨",
-            "answer": "Spider-Man",
-            "aliases": [
-                "spiderman",
-                "spider man"
-            ]
-        },
-        {
-            "emoji": "🧙‍♂️⚡",
-            "answer": "Harry Potter",
-            "aliases": [
-                "harry potter"
-            ]
-        },
-        {
-            "emoji": "🚢❄️💔",
-            "answer": "Titanic",
-            "aliases": [
-                "titanic"
-            ]
-        },
-        {
-            "emoji": "👻🚫",
-            "answer": "Ghostbusters",
-            "aliases": [
-                "ghost busters",
-                "ghostbusters"
-            ]
-        }
-    ],
+    {
+        "emojis": "🦁👑",
+        "answers": ["The Lion King", "lion king"]
+    },
+    {
+        "emojis": "🕷️👨",
+        "answers": ["Spider-Man", "spiderman", "spider man"]
+    },
+    {
+        "emojis": "🧙‍♂️⚡",
+        "answers": ["Harry Potter"]
+    },
+    {
+        "emojis": "🚢❄️💔",
+        "answers": ["Titanic"]
+    },
+    {
+        "emojis": "👻🚫",
+        "answers": ["Ghostbusters", "ghost busters"]
+    },
+    {
+        "emojis": "🦈🌊",
+        "answers": ["Jaws"]
+    },
+    {
+        "emojis": "🤖❤️",
+        "answers": ["WALL-E", "walle", "wall e"]
+    },
+    {
+        "emojis": "🧊👸",
+        "answers": ["Frozen"]
+    },
+    {
+        "emojis": "👠🎃",
+        "answers": ["Cinderella"]
+    },
+    {
+        "emojis": "🦖🏝️",
+        "answers": ["Jurassic Park"]
+    },
+    {
+        "emojis": "🚗⚡",
+        "answers": ["Cars"]
+    },
+    {
+        "emojis": "🐼🥋",
+        "answers": ["Kung Fu Panda"]
+    },
+    {
+        "emojis": "🧅👹",
+        "answers": ["Shrek"]
+    },
+    {
+        "emojis": "🐀👨‍🍳",
+        "answers": ["Ratatouille"]
+    },
+    {
+        "emojis": "🎈🏠",
+        "answers": ["Up"]
+    },
+    {
+        "emojis": "🐠🔍",
+        "answers": ["Finding Nemo"]
+    },
+    {
+        "emojis": "👽📞🏠",
+        "answers": ["E.T.", "et", "e t"]
+    },
+    {
+        "emojis": "🏴‍☠️🌊",
+        "answers": ["Pirates of the Caribbean", "pirates"]
+    },
+    {
+        "emojis": "💍🌋",
+        "answers": ["The Lord of the Rings", "lord of the rings", "lotr"]
+    },
+    {
+        "emojis": "🦇🦸",
+        "answers": ["Batman"]
+    },
+    {
+        "emojis": "🦸🛡️",
+        "answers": ["Captain America"]
+    },
+    {
+        "emojis": "🟢👊",
+        "answers": ["The Hulk", "hulk"]
+    },
+    {
+        "emojis": "🤡🎈",
+        "answers": ["It"]
+    },
+    {
+        "emojis": "🧠🔵",
+        "answers": ["Inside Out"]
+    },
+    {
+        "emojis": "🌙🧛",
+        "answers": ["Twilight"]
+    }
+],
 
     "anime": [
-        {
-            "emoji": "🍥🦊👦",
-            "answer": "Naruto",
-            "aliases": [
-                "naruto"
-            ]
-        },
-        {
-            "emoji": "🏴‍☠️👒",
-            "answer": "One Piece",
-            "aliases": [
-                "onepiece",
-                "one piece"
-            ]
-        },
-        {
-            "emoji": "🐉⚡👦",
-            "answer": "Dragon Ball",
-            "aliases": [
-                "dragonball",
-                "dragon ball"
-            ]
-        },
-        {
-            "emoji": "👹⚔️",
-            "answer": "Demon Slayer",
-            "aliases": [
-                "demonslayer",
-                "demon slayer"
-            ]
-        },
-        {
-            "emoji": "👊💥",
-            "answer": "One Punch Man",
-            "aliases": [
-                "onepunchman",
-                "one punch man"
-            ]
-        }
-    ],
+    {
+        "emojis": "🍥🦊👦",
+        "answers": ["Naruto"]
+    },
+    {
+        "emojis": "🏴‍☠️👒",
+        "answers": ["One Piece", "onepiece"]
+    },
+    {
+        "emojis": "🐉⚡👦",
+        "answers": ["Dragon Ball", "dragonball"]
+    },
+    {
+        "emojis": "👹⚔️",
+        "answers": ["Demon Slayer", "demonslayer"]
+    },
+    {
+        "emojis": "👊💥",
+        "answers": ["One Punch Man", "onepunchman"]
+    },
+    {
+        "emojis": "🧱⚔️",
+        "answers": ["Attack on Titan", "attack on titan", "aot"]
+    },
+    {
+        "emojis": "📓💀",
+        "answers": ["Death Note"]
+    },
+    {
+        "emojis": "🧙⚔️👹",
+        "answers": ["Black Clover"]
+    },
+    {
+        "emojis": "👨‍⚕️🪚",
+        "answers": ["Chainsaw Man"]
+    },
+    {
+        "emojis": "👻🧡",
+        "answers": ["Bleach"]
+    },
+    {
+        "emojis": "🏐👦",
+        "answers": ["Haikyuu", "haikyu"]
+    },
+    {
+        "emojis": "🕵️👦",
+        "answers": ["Detective Conan", "case closed"]
+    },
+    {
+        "emojis": "🐱⚔️👦",
+        "answers": ["Jujutsu Kaisen", "jjk"]
+    },
+    {
+        "emojis": "🧪⚗️👬",
+        "answers": ["Fullmetal Alchemist", "fma"]
+    },
+    {
+        "emojis": "👨‍🎓🦸",
+        "answers": ["My Hero Academia", "mha"]
+    },
+    {
+        "emojis": "👑👹",
+        "answers": ["The Seven Deadly Sins", "seven deadly sins"]
+    },
+    {
+        "emojis": "👁️🔴",
+        "answers": ["Tokyo Ghoul"]
+    },
+    {
+        "emojis": "🕵️💥",
+        "answers": ["Spy x Family", "spy family"]
+    },
+    {
+        "emojis": "🏀🔥",
+        "answers": ["Slam Dunk"]
+    },
+    {
+        "emojis": "🎮🗡️",
+        "answers": ["Sword Art Online", "sao"]
+    },
+    {
+        "emojis": "👦🧪",
+        "answers": ["Dr. Stone", "dr stone"]
+    },
+    {
+        "emojis": "🐺🌕",
+        "answers": ["Wolf's Rain", "wolfs rain"]
+    },
+    {
+        "emojis": "👨‍🍳🏴‍☠️",
+        "answers": ["Food Wars", "shokugeki no soma"]
+    },
+    {
+        "emojis": "🚀👊",
+        "answers": ["Mob Psycho 100", "mob psycho"]
+    },
+    {
+        "emojis": "💀🎓",
+        "answers": ["Soul Eater"]
+    }
+],
 
     "countries": [
-        {
-            "emoji": "🍁",
-            "answer": "Canada",
-            "aliases": [
-                "canada"
-            ]
-        },
-        {
-            "emoji": "🍕🇮🇹",
-            "answer": "Italy",
-            "aliases": [
-                "italy",
-                "italia"
-            ]
-        },
-        {
-            "emoji": "🗼🥖",
-            "answer": "France",
-            "aliases": [
-                "france"
-            ]
-        },
-        {
-            "emoji": "🦘",
-            "answer": "Australia",
-            "aliases": [
-                "australia"
-            ]
-        },
-        {
-            "emoji": "🌷🚲",
-            "answer": "Netherlands",
-            "aliases": [
-                "the netherlands",
-                "holland",
-                "netherlands"
-            ]
-        }
-    ],
-
+    {
+        "emojis": "🍁",
+        "answers": ["Canada"]
+    },
+    {
+        "emojis": "🍕🇮🇹",
+        "answers": ["Italy", "italia"]
+    },
+    {
+        "emojis": "🗼🥖",
+        "answers": ["France"]
+    },
+    {
+        "emojis": "🦘",
+        "answers": ["Australia"]
+    },
+    {
+        "emojis": "🌷🚲",
+        "answers": ["Netherlands", "the netherlands", "holland"]
+    },
+    {
+        "emojis": "🗽🦅",
+        "answers": ["United States", "USA", "US", "America"]
+    },
+    {
+        "emojis": "🍣🗻",
+        "answers": ["Japan"]
+    },
+    {
+        "emojis": "🐼🥡",
+        "answers": ["China"]
+    },
+    {
+        "emojis": "🌮🌵",
+        "answers": ["Mexico"]
+    },
+    {
+        "emojis": "🦁🌍",
+        "answers": ["South Africa"]
+    },
+    {
+        "emojis": "🥨🍺",
+        "answers": ["Germany"]
+    },
+    {
+        "emojis": "💃🐂",
+        "answers": ["Spain"]
+    },
+    {
+        "emojis": "🏛️🏺",
+        "answers": ["Greece"]
+    },
+    {
+        "emojis": "🏔️🧀",
+        "answers": ["Switzerland"]
+    },
+    {
+        "emojis": "☘️🍺",
+        "answers": ["Ireland"]
+    },
+    {
+        "emojis": "🏰🐉",
+        "answers": ["United Kingdom", "UK", "Great Britain", "Britain"]
+    },
+    {
+        "emojis": "🧉⚽",
+        "answers": ["Argentina"]
+    },
+    {
+        "emojis": "⚽☕",
+        "answers": ["Brazil"]
+    },
+    {
+        "emojis": "🐪🏜️",
+        "answers": ["Egypt"]
+    },
+    {
+        "emojis": "🐘🕌",
+        "answers": ["India"]
+    },
+    {
+        "emojis": "🌋🐑",
+        "answers": ["New Zealand"]
+    },
+    {
+        "emojis": "🥩⚽",
+        "answers": ["Uruguay"]
+    },
+    {
+        "emojis": "🕌🐪",
+        "answers": ["Saudi Arabia"]
+    },
+    {
+        "emojis": "❄️🐻",
+        "answers": ["Russia"]
+    },
+    {
+        "emojis": "🍺🍫",
+        "answers": ["Belgium"]
+    }
+],
+    
     "words": [
-        {
-            "emoji": "🌧️🐱🐶",
-            "answer": "Raining Cats and Dogs",
-            "aliases": [
-                "raining cats and dogs"
-            ]
-        },
-        {
-            "emoji": "🧊💔",
-            "answer": "Cold Hearted",
-            "aliases": [
-                "cold hearted",
-                "coldhearted"
-            ]
-        },
-        {
-            "emoji": "🔥👀",
-            "answer": "Hot Eyes",
-            "aliases": [
-                "hot eyes"
-            ]
-        },
-        {
-            "emoji": "🧠💨",
-            "answer": "Mind Blown",
-            "aliases": [
-                "mind blown"
-            ]
-        },
-        {
-            "emoji": "👀❤️",
-            "answer": "Love at First Sight",
-            "aliases": [
-                "love at first sight"
-            ]
-        }
+    {
+        "emojis": "🌧️🐱🐶",
+        "answers": ["Raining Cats and Dogs"]
+    },
+    {
+        "emojis": "🧊💔",
+        "answers": ["Cold Hearted", "coldhearted"]
+    },
+    {
+        "emojis": "🧠💨",
+        "answers": ["Mind Blown"]
+    },
+    {
+        "emojis": "👀❤️",
+        "answers": ["Love at First Sight"]
+    },
+    {
+        "emojis": "🐘🏠",
+        "answers": ["Elephant in the Room"]
+    },
+    {
+        "emojis": "💰🗣️",
+        "answers": ["Money Talks"]
+    },
+    {
+        "emojis": "⏰💰",
+        "answers": ["Time is Money"]
+    },
+    {
+        "emojis": "❤️🦁",
+        "answers": ["Lionheart", "lion heart"]
+    },
+    {
+        "emojis": "🔥💧",
+        "answers": ["Playing with Fire"]
+    },
+    {
+        "emojis": "🐦🖐️",
+        "answers": ["A Bird in the Hand"]
+    },
+    {
+        "emojis": "🐟💧",
+        "answers": ["Fish Out of Water"]
+    },
+    {
+        "emojis": "🍎👁️",
+        "answers": ["Apple of My Eye"]
+    },
+    {
+        "emojis": "🦵🛠️",
+        "answers": ["Break a Leg"]
+    },
+    {
+        "emojis": "🫘💦",
+        "answers": ["Spill the Beans"]
+    },
+    {
+        "emojis": "🍰🚶",
+        "answers": ["Piece of Cake"]
+    },
+    {
+        "emojis": "🥶🦶",
+        "answers": ["Cold Feet"]
+    },
+    {
+        "emojis": "☁️9️⃣",
+        "answers": ["Cloud Nine", "on cloud nine"]
+    },
+    {
+        "emojis": "🐷🕊️",
+        "answers": ["When Pigs Fly"]
+    },
+    {
+        "emojis": "👁️🌧️",
+        "answers": ["Cry Me a River"]
+    },
+    {
+        "emojis": "🐺👔",
+        "answers": ["Wolf in Sheep's Clothing", "a wolf in sheeps clothing"]
+    },
+    {
+        "emojis": "🦴🐕",
+        "answers": ["Bone to Pick"]
+    },
+    {
+        "emojis": "🛏️🐶",
+        "answers": ["Let Sleeping Dogs Lie"]
+    },
+    {
+        "emojis": "🚶💨",
+        "answers": ["Walk the Talk"]
+    },
+    {
+        "emojis": "🌟👀",
+        "answers": ["Star Struck", "starstruck"]
+    },
+    {
+        "emojis": "🚪🚶",
+        "answers": ["Out the Door"]
+    }
     ]
 }
