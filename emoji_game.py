@@ -530,43 +530,32 @@ async def start_game(
 
 
     # ====================================
-    # PICK PUZZLE
-    # ====================================
+# PICK PUZZLE
+# ====================================
 
-    puzzle = random.choice(
-        puzzles[category]
-    )
+puzzle = random.choice(
 
+    puzzles[category]
 
-    # Your puzzles.json uses:
-    # emoji
-    # answer
-    # aliases
-
-    emojis = puzzle[
-        "emojis"
-    ]
+)
 
 
-    correct_answer = puzzle[
-        "answer"
-    ]
+# Get emojis
+
+emojis = puzzle[
+
+    "emojis"
+
+]
 
 
-    aliases = puzzle.get(
-        "aliases",
-        []
-    )
+# Get all accepted answers
 
+answers = puzzle[
 
-    # Combine all valid answers
+    "answers"
 
-    answers = [
-
-        correct_answer
-
-    ] + aliases
-
+]
 
     # ====================================
     # REGISTER GAME
