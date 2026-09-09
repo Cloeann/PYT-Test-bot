@@ -1,11 +1,10 @@
 import discord
 import json
-import random
-import asyncio
-import re
 import os
+import asyncio
+import random
+import re
 
-from discord.ext import commands
 from discord import app_commands
 
 
@@ -17,112 +16,88 @@ BASE_DIR = os.path.dirname(
     os.path.abspath(__file__)
 )
 
-
 PUZZLES_PATH = os.path.join(
     BASE_DIR,
     "puzzles.json"
 )
 
-
 SCORES_PATH = os.path.join(
     BASE_DIR,
-    "scores.json"
+    "emoji_scores.json"
 )
 
 
 # ========================================
-# LOAD PUZZLES
+# GAME SETTINGS
 # ========================================
 
-def load_puzzles():
+GAME_TIME = 60
+
+
+# ========================================
+# ACTIVE GAMES
+# ========================================
+
+active_games = {}
+
+
+# ========================================
+# LOAD JSON
+# ========================================
+
+def load_json(path, default):
 
     try:
 
+        if not os.path.exists(path):
+
+            return default
+
+
         with open(
-            PUZZLES_PATH,
+            path,
             "r",
             encoding="utf-8"
         ) as file:
 
             return json.load(file)
 
-    except Exception as error:
-
-        print(
-            f"❌ Could not load puzzles: {error}"
-        )
-
-        return {}
-
-
-# ========================================
-# LOAD SCORES
-# ========================================
-
-def load_scores():
-
-    try:
-
-        if not os.path.exists(
-            SCORES_PATH
-        ):
-
-            return {}
-
-
-        with open(
-            SCORES_PATH,
-            "r",
-            encoding="utf-8"
-        ) as file:
-
-            content = file.read()
-
-
-            if not content.strip():
-
-                return {}
-
-
-            return json.loads(
-                content
-            )
-
 
     except Exception as error:
 
         print(
-            f"❌ Could not load scores: {error}"
+            f"❌ Could not load {path}: {error}"
         )
 
-        return {}
+        return default
 
 
 # ========================================
-# SAVE SCORES
+# SAVE JSON
 # ========================================
 
-def save_scores(scores):
+def save_json(path, data):
 
     try:
 
         with open(
-            SCORES_PATH,
+            path,
             "w",
             encoding="utf-8"
         ) as file:
 
             json.dump(
-                scores,
+                data,
                 file,
-                indent=4
+                indent=4,
+                ensure_ascii=False
             )
 
 
     except Exception as error:
 
         print(
-            f"❌ Could not save scores: {error}"
+            f"❌ Could not save {path}: {error}"
         )
 
 
@@ -130,7 +105,7 @@ def save_scores(scores):
 # NORMALIZE ANSWERS
 # ========================================
 
-def normalize(text):
+def normalize_answer(text):
 
     text = text.lower()
 
@@ -154,42 +129,25 @@ def normalize(text):
 # ========================================
 
 def check_answer(
-    guess,
-    puzzle
+
+    message,
+    answers
+
 ):
 
-    guess = normalize(
-        guess
-    )
-
-
-    answers = [
-
-        puzzle.get(
-            "answer",
-            ""
-        )
-
-    ]
-
-
-    answers.extend(
-
-        puzzle.get(
-            "aliases",
-            []
-        )
-
+    guess = normalize_answer(
+        message
     )
 
 
     for answer in answers:
 
-        if (
+        normalized = normalize_answer(
+            answer
+        )
 
-            guess == normalize(answer)
 
-        ):
+        if guess == normalized:
 
             return True
 
@@ -198,55 +156,86 @@ def check_answer(
 
 
 # ========================================
-# ACTIVE GAMES
+# LOAD SCORES
 # ========================================
 
-active_games = {}
+def load_scores():
 
+    return load_json(
 
-# ========================================
-# CATEGORY DATA
-# ========================================
+        SCORES_PATH,
 
-CATEGORIES = {
-
-    "movies": {
-
-        "label": "🎬 Movies",
-
-        "emoji": "🎬"
-
-    },
-
-    "anime": {
-
-        "label": "🍥 Anime",
-
-        "emoji": "🍥"
-
-    },
-
-    "countries": {
-
-        "label": "🌍 Countries",
-
-        "emoji": "🌍"
-
-    },
-
-    "words": {
-
-        "label": "💬 Words",
-
-        "emoji": "💬"
-
-    }
-
-}
+        {}
+    )
 
 
 # ========================================
-# CATEGORY VIEW
+# SAVE SCORES
+# ========================================
+
+def save_scores(scores):
+
+    save_json(
+
+        SCORES_PATH,
+
+        scores
+
+    )
+
+
+# ========================================
+# ADD SCORE
+# ========================================
+
+def add_score(
+
+    user
+
+):
+
+    scores = load_scores()
+
+    user_id = str(
+        user.id
+    )
+
+
+    if user_id not in scores:
+
+        scores[user_id] = {
+
+            "name":
+                user.display_name,
+
+            "score":
+                0
+
+        }
+
+
+    scores[user_id][
+        "name"
+    ] = user.display_name
+
+
+    scores[user_id][
+        "score"
+    ] += 1
+
+
+    save_scores(
+        scores
+    )
+
+
+    return scores[user_id][
+        "score"
+    ]
+
+
+# ========================================
+# CATEGORY BUTTONS
 # ========================================
 
 class CategoryView(
@@ -255,33 +244,44 @@ class CategoryView(
 
 
     def __init__(
+
         self,
-        cog,
-        channel_id
+        author
+
     ):
 
         super().__init__(
-            timeout=60
+
+            timeout=30
+
         )
 
 
-        self.cog = cog
-
-        self.channel_id = channel_id
+        self.author = author
 
 
     async def interaction_check(
+
         self,
         interaction
+
     ):
+
 
         if (
 
-            interaction.channel_id
-            !=
-            self.channel_id
+            interaction.user.id !=
+            self.author.id
 
         ):
+
+            await interaction.response.send_message(
+
+                "❌ Only the person who started the game can choose a category!",
+
+                ephemeral=True
+
+            )
 
             return False
 
@@ -305,14 +305,12 @@ class CategoryView(
     async def movies(
 
         self,
-
         interaction,
-
         button
 
     ):
 
-        await self.start_game(
+        await start_game(
 
             interaction,
 
@@ -337,14 +335,12 @@ class CategoryView(
     async def anime(
 
         self,
-
         interaction,
-
         button
 
     ):
 
-        await self.start_game(
+        await start_game(
 
             interaction,
 
@@ -369,14 +365,12 @@ class CategoryView(
     async def countries(
 
         self,
-
         interaction,
-
         button
 
     ):
 
-        await self.start_game(
+        await start_game(
 
             interaction,
 
@@ -401,14 +395,12 @@ class CategoryView(
     async def words(
 
         self,
-
         interaction,
-
         button
 
     ):
 
-        await self.start_game(
+        await start_game(
 
             interaction,
 
@@ -417,190 +409,304 @@ class CategoryView(
         )
 
 
-    # ====================================
-    # START GAME
-    # ====================================
-
-    async def start_game(
-
-        self,
-
-        interaction,
-
-        category
-
-    ):
-
-        if (
-
-            self.channel_id
-            in
-            active_games
-
-        ):
-
-            await interaction.response.send_message(
-
-                "⚠️ There is already an active game in this channel!",
-
-                ephemeral=True
-
-            )
-
-            return
-
-
-        puzzles = self.cog.puzzles.get(
-
-            category,
-
-            []
-
-        )
-
-
-        if not puzzles:
-
-            await interaction.response.send_message(
-
-                "❌ No puzzles found for this category.",
-
-                ephemeral=True
-
-            )
-
-            return
-
-
-        puzzle = random.choice(
-            puzzles
-        )
-
-
-        active_games[
-            self.channel_id
-        ] = {
-
-            "puzzle": puzzle,
-
-            "category": category,
-
-            "message": None,
-
-            "finished": False
-
-        }
-
-
-        category_data = CATEGORIES[
-            category
-        ]
-
-
-        embed = discord.Embed(
-
-            title="🎮 Emoji Guessing Game",
-
-            description=
-
-                f"## {puzzle['emoji']}\n\n"
-
-                f"**Category:** "
-                f"{category_data['label']}\n\n"
-
-                "⏱️ You have **60 seconds** to guess!\n"
-
-                "💬 Everyone can type their guesses in chat!"
-
-        )
-
-
-        await interaction.response.edit_message(
-
-            content=None,
-
-            embed=embed,
-
-            view=None
-
-        )
-
-
-        message = await interaction.original_response()
-
-
-        active_games[
-            self.channel_id
-        ][
-            "message"
-        ] = message
-
-
-        asyncio.create_task(
-
-            self.cog.game_timer(
-                self.channel_id
-            )
-
-        )
-
-
 # ========================================
-# EMOJI GAME COG
+# START GAME
 # ========================================
 
-class EmojiGame(
-    commands.Cog
+async def start_game(
+
+    interaction,
+    category
+
 ):
 
 
-    def __init__(
-        self,
-        bot
-    ):
+    channel_id = interaction.channel.id
 
-        self.bot = bot
 
-        self.puzzles = load_puzzles()
+    # Check active game
 
-        self.scores = load_scores()
+    if channel_id in active_games:
+
+        await interaction.response.send_message(
+
+            "❌ There is already an active emoji game in this channel!",
+
+            ephemeral=True
+
+        )
+
+        return
+
+
+    # Load puzzles
+
+    puzzles = load_json(
+
+        PUZZLES_PATH,
+
+        {}
+    )
+
+
+    # Check category
+
+    if category not in puzzles:
+
+        await interaction.response.send_message(
+
+            "❌ This category has no puzzles!",
+
+            ephemeral=True
+
+        )
+
+        return
+
+
+    if not puzzles[category]:
+
+        await interaction.response.send_message(
+
+            "❌ This category has no puzzles!",
+
+            ephemeral=True
+
+        )
+
+        return
+
+
+    # Pick puzzle
+
+    puzzle = random.choice(
+
+        puzzles[category]
+
+    )
+
+
+    emojis = puzzle[
+        "emojis"
+    ]
+
+
+    answers = puzzle[
+        "answers"
+    ]
+
+
+    # Register game
+
+    active_games[channel_id] = {
+
+        "answers":
+            answers,
+
+        "category":
+            category
+
+    }
+
+
+    # Disable buttons
+
+    view = CategoryView(
+
+        interaction.user
+
+    )
+
+
+    for item in view.children:
+
+        item.disabled = True
+
+
+    # Edit category message
+
+    await interaction.response.edit_message(
+
+        content="🎮 Starting game...",
+
+        view=view
+
+    )
+
+
+    # Create embed
+
+    embed = discord.Embed(
+
+        title="🎮 Emoji Guessing Game",
+
+        description=
+
+            f"Category: **{category.title()}**\n\n"
+            f"# {emojis}\n\n"
+            f"⏱️ You have **{GAME_TIME} seconds**!\n\n"
+            f"💬 Everyone can guess in chat!",
+
+    )
+
+
+    game_message = await interaction.channel.send(
+
+        embed=embed
+
+    )
+
+
+    # Wait for answer
+
+    def check(message):
+
+        return (
+
+            message.channel.id ==
+            channel_id
+
+            and
+
+            not message.author.bot
+
+        )
+
+
+    try:
+
+        while True:
+
+
+            message = await interaction.client.wait_for(
+
+                "message",
+
+                timeout=GAME_TIME,
+
+                check=check
+
+            )
+
+
+            if check_answer(
+
+                message.content,
+
+                answers
+
+            ):
+
+
+                # Add score
+
+                score = add_score(
+
+                    message.author
+
+                )
+
+
+                # Winner embed
+
+                winner_embed = discord.Embed(
+
+                    title="🎉 Correct!",
+
+                    description=
+
+                        f"🏆 {message.author.mention} "
+                        f"got it!\n\n"
+
+                        f"✅ Answer: **{answers[0]}**\n\n"
+
+                        f"⭐ Total Score: **{score}**"
+
+                )
+
+
+                await interaction.channel.send(
+
+                    embed=winner_embed
+
+                )
+
+
+                break
+
+
+    except asyncio.TimeoutError:
+
+
+        timeout_embed = discord.Embed(
+
+            title="⏰ Time's Up!",
+
+            description=
+
+                f"The answer was:\n\n"
+
+                f"**{answers[0]}**"
+
+        )
+
+
+        await interaction.channel.send(
+
+            embed=timeout_embed
+
+        )
+
+
+    finally:
+
+
+        # Remove active game
+
+        active_games.pop(
+
+            channel_id,
+
+            None
+
+        )
+
+
+# ========================================
+# SETUP COMMANDS
+# ========================================
+
+def setup_emoji_game(bot):
 
 
     # ====================================
-    # /EMOJI
+    # EMOJI COMMAND
     # ====================================
 
-    @app_commands.command(
+    @bot.tree.command(
 
         name="emoji",
 
-        description=
-        "Start an emoji guessing game!"
+        description="Start an emoji guessing game!"
 
     )
     async def emoji(
 
-        self,
-
-        interaction:
-        discord.Interaction
+        interaction: discord.Interaction
 
     ):
 
-        channel_id = interaction.channel_id
+
+        channel_id = interaction.channel.id
 
 
-        if (
+        # Check active game
 
-            channel_id
-            in
-            active_games
-
-        ):
+        if channel_id in active_games:
 
             await interaction.response.send_message(
 
-                "⚠️ There is already an active game in this channel!",
+                "❌ There is already an active emoji game in this channel!",
 
                 ephemeral=True
 
@@ -609,13 +715,15 @@ class EmojiGame(
             return
 
 
+        # Category embed
+
         embed = discord.Embed(
 
             title="🎮 Emoji Guessing Game",
 
             description=
 
-                "Choose a category to begin!\n\n"
+                "Choose a category to start!\n\n"
 
                 "🎬 **Movies**\n"
 
@@ -630,9 +738,7 @@ class EmojiGame(
 
         view = CategoryView(
 
-            self,
-
-            channel_id
+            interaction.user
 
         )
 
@@ -647,353 +753,71 @@ class EmojiGame(
 
 
     # ====================================
-    # MESSAGE LISTENER
+    # HIGHSCORE COMMAND
     # ====================================
 
-    @commands.Cog.listener()
-    async def on_message(
-
-        self,
-
-        message
-
-    ):
-
-        if message.author.bot:
-
-            return
-
-
-        channel_id = message.channel.id
-
-
-        if (
-
-            channel_id
-            not in
-            active_games
-
-        ):
-
-            return
-
-
-        game = active_games[
-            channel_id
-        ]
-
-
-        if game[
-            "finished"
-        ]:
-
-            return
-
-
-        puzzle = game[
-            "puzzle"
-        ]
-
-
-        if not check_answer(
-
-            message.content,
-
-            puzzle
-
-        ):
-
-            return
-
-
-        # ================================
-        # CORRECT ANSWER
-        # ================================
-
-        game[
-            "finished"
-        ] = True
-
-
-        user_id = str(
-            message.author.id
-        )
-
-
-        if (
-
-            user_id
-            not in
-            self.scores
-
-        ):
-
-            self.scores[
-                user_id
-            ] = {
-
-                "score": 0,
-
-                "name":
-                message.author.display_name
-
-            }
-
-
-        self.scores[
-            user_id
-        ][
-            "score"
-        ] += 1
-
-
-        self.scores[
-            user_id
-        ][
-            "name"
-        ] = message.author.display_name
-
-
-        save_scores(
-            self.scores
-        )
-
-
-        embed = discord.Embed(
-
-            title="🎉 Correct!",
-
-            description=
-
-                f"🏆 **{message.author.display_name}** "
-                f"guessed correctly!\n\n"
-
-                f"🧩 {puzzle['emoji']}\n\n"
-
-                f"✅ **Answer:** "
-                f"{puzzle['answer']}\n\n"
-
-                "➕ **1 point!**"
-
-        )
-
-
-        await message.channel.send(
-
-            embed=embed
-
-        )
-
-
-        active_games.pop(
-
-            channel_id,
-
-            None
-
-        )
-
-
-    # ====================================
-    # GAME TIMER
-    # ====================================
-
-    async def game_timer(
-
-        self,
-
-        channel_id
-
-    ):
-
-        await asyncio.sleep(
-            60
-        )
-
-
-        if (
-
-            channel_id
-            not in
-            active_games
-
-        ):
-
-            return
-
-
-        game = active_games[
-            channel_id
-        ]
-
-
-        if game[
-            "finished"
-        ]:
-
-            return
-
-
-        game[
-            "finished"
-        ] = True
-
-
-        puzzle = game[
-            "puzzle"
-        ]
-
-
-        message = game.get(
-            "message"
-        )
-
-
-        embed = discord.Embed(
-
-            title="⏰ Time's Up!",
-
-            description=
-
-                "Nobody guessed it in time! 😭\n\n"
-
-                f"🧩 {puzzle['emoji']}\n\n"
-
-                f"✅ **The answer was:** "
-                f"{puzzle['answer']}"
-
-        )
-
-
-        if message:
-
-            await message.channel.send(
-
-                embed=embed
-
-            )
-
-
-        active_games.pop(
-
-            channel_id,
-
-            None
-
-        )
-
-
-    # ====================================
-    # /EMOJI_HIGHSCORE
-    # ====================================
-
-    @app_commands.command(
+    @bot.tree.command(
 
         name="emoji_highscore",
 
-        description=
-        "View the emoji game highscores!"
+        description="View the emoji game highscore!"
 
     )
     async def emoji_highscore(
 
-        self,
-
-        interaction:
-        discord.Interaction
+        interaction: discord.Interaction
 
     ):
 
-        if not self.scores:
+
+        scores = load_scores()
+
+
+        if not scores:
 
             await interaction.response.send_message(
 
-                "📊 No scores yet! Play `/emoji` to get started!"
+                "🏆 No scores yet! Be the first to win an emoji game!"
 
             )
 
             return
 
 
+        # Sort scores
+
         sorted_scores = sorted(
 
-            self.scores.items(),
+            scores.values(),
 
             key=lambda item:
-            item[1].get(
-                "score",
-                0
-            ),
+
+                item["score"],
 
             reverse=True
 
         )
 
 
-        lines = []
+        # Create leaderboard
+
+        leaderboard = []
 
 
-        medals = [
+        for index, player in enumerate(
 
-            "🥇",
+            sorted_scores[:10],
 
-            "🥈",
-
-            "🥉"
-
-        ]
-
-
-        for index, (
-
-            user_id,
-
-            data
-
-        ) in enumerate(
-
-            sorted_scores[:10]
+            start=1
 
         ):
 
 
-            if index < 3:
+            leaderboard.append(
 
-                position = medals[
-                    index
-                ]
-
-            else:
-
-                position = (
-                    f"**{index + 1}.**"
-                )
-
-
-            name = data.get(
-
-                "name",
-
-                "Unknown User"
-
-            )
-
-
-            score = data.get(
-
-                "score",
-
-                0
-
-            )
-
-
-            lines.append(
-
-                f"{position} "
-                f"**{name}** "
-                f"— {score} point"
-                f"{'s' if score != 1 else ''}"
+                f"**{index}.** "
+                f"{player['name']} — "
+                f"🏆 {player['score']}"
 
             )
 
@@ -1003,7 +827,9 @@ class EmojiGame(
             title="🏆 Emoji Game Highscores",
 
             description="\n".join(
-                lines
+
+                leaderboard
+
             )
 
         )
@@ -1014,18 +840,3 @@ class EmojiGame(
             embed=embed
 
         )
-
-
-# ========================================
-# SETUP
-# ========================================
-
-async def setup(
-    bot
-):
-
-    await bot.add_cog(
-
-        EmojiGame(bot)
-
-    )
