@@ -3,6 +3,8 @@ import discord
 
 from discord.ext import commands
 
+from emoji_game import setup_emoji_game
+
 
 # ========================================
 # CONFIGURATION
@@ -23,6 +25,8 @@ intents = discord.Intents.default()
 
 intents.message_content = True
 
+intents.members = True
+
 
 # ========================================
 # BOT
@@ -37,45 +41,12 @@ bot = commands.Bot(
 
 
 # ========================================
-# PING COMMAND
+# LOAD EMOJI GAME
 # ========================================
 
-@bot.tree.command(
-    name="ping",
-    description="Check if the bot is alive!"
+setup_emoji_game(
+    bot
 )
-async def ping(
-
-    interaction: discord.Interaction
-
-):
-
-    await interaction.response.send_message(
-
-        "🏓 Pong! The bot is alive!"
-
-    )
-
-
-# ========================================
-# EMOJI TEST COMMAND
-# ========================================
-
-@bot.tree.command(
-    name="emoji",
-    description="Start an emoji guessing game!"
-)
-async def emoji(
-
-    interaction: discord.Interaction
-
-):
-
-    await interaction.response.send_message(
-
-        "🎮 Emoji game test! It works! 🎉"
-
-    )
 
 
 # ========================================
@@ -116,6 +87,27 @@ async def on_ready():
 
     print(
         f"🤖 Logged in as {bot.user}"
+    )
+
+
+# ========================================
+# PING COMMAND
+# ========================================
+
+@bot.tree.command(
+    name="ping",
+    description="Check if the bot is alive!"
+)
+async def ping(
+
+    interaction: discord.Interaction
+
+):
+
+    await interaction.response.send_message(
+
+        "🏓 Pong! The bot is alive!"
+
     )
 
 
