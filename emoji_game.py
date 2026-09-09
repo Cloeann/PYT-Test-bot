@@ -544,7 +544,7 @@ async def start_game(
     # aliases
 
     emojis = puzzle[
-        "emoji"
+        "emojis"
     ]
 
 
