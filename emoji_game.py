@@ -563,8 +563,7 @@ async def start_game(
 
         return (
 
-            message.channel.id ==
-            channel_id
+            message.channel.id == channel_id
 
             and
 
@@ -573,21 +572,57 @@ async def start_game(
         )
 
 
+    # Save when the game started
+
+    start_time = asyncio.get_event_loop().time()
+
+
     try:
 
         while True:
 
 
+            # Calculate remaining time
+
+            elapsed = (
+
+                asyncio.get_event_loop().time()
+
+                - start_time
+
+            )
+
+
+            remaining_time = (
+
+                GAME_TIME
+
+                - elapsed
+
+            )
+
+
+            # Stop if time is up
+
+            if remaining_time <= 0:
+
+                raise asyncio.TimeoutError
+
+
+            # Wait only for the remaining time
+
             message = await interaction.client.wait_for(
 
                 "message",
 
-                timeout=GAME_TIME,
+                timeout=remaining_time,
 
                 check=check
 
             )
 
+
+            # Check answer
 
             if check_answer(
 
@@ -598,16 +633,12 @@ async def start_game(
             ):
 
 
-                # Add score
-
                 score = add_score(
 
                     message.author
 
                 )
 
-
-                # Winner embed
 
                 winner_embed = discord.Embed(
 
@@ -660,8 +691,6 @@ async def start_game(
 
     finally:
 
-
-        # Remove active game
 
         active_games.pop(
 
