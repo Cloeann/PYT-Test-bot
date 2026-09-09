@@ -408,6 +408,88 @@ class CategoryView(
 
         )
 
+# ========================================
+# GENERATE HINT
+# ========================================
+
+def generate_hint(answer):
+
+    hint = ""
+
+
+    for character in answer:
+
+
+        # Keep spaces
+
+        if character == " ":
+
+            hint += " "
+
+
+        # Keep hyphens
+
+        elif character == "-":
+
+            hint += "-"
+
+
+        else:
+
+            hint += "_"
+
+
+    # Reveal first letter of every word
+
+    words = hint.split(" ")
+
+    answer_words = answer.split(" ")
+
+
+    new_words = []
+
+
+    for index, word in enumerate(words):
+
+
+        answer_word = answer_words[index]
+
+
+        if answer_word:
+
+
+            new_word = (
+
+                answer_word[0]
+
+                +
+
+                word[1:]
+
+            )
+
+
+            new_words.append(
+
+                new_word
+
+            )
+
+
+        else:
+
+            new_words.append(
+
+                word
+
+            )
+
+
+    return " ".join(
+
+        new_words
+
+    )
 
 # ========================================
 # START GAME
@@ -591,6 +673,47 @@ async def start_game(
 
             remaining -= 10
 
+            # ====================================
+# 30 SECOND HINT
+# ====================================
+
+if remaining == 30:
+
+
+    answer = answers[0]
+
+
+    hint = generate_hint(
+
+        answer
+
+    )
+
+
+    letter_count = len(
+
+        [
+
+            character
+
+            for character in answer
+
+            if character.isalpha()
+
+        ]
+
+    )
+
+
+    await interaction.channel.send(
+
+        f"💡 **HINT!** 👀\n\n"
+
+        f"`{hint}`\n\n"
+
+        f"📝 Total letters: **{letter_count}**"
+
+    )
 
             if remaining > 0:
 
@@ -601,6 +724,7 @@ async def start_game(
 
                 )
 
+    
 
     # Start countdown in background
 
